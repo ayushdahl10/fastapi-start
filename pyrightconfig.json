@@ -1,5 +1,9 @@
 {
   "venvPath": ".",
   "venv": ".venv",
-  "typeCheckingMode": "off"
+  "typeCheckingMode": "off",
+  "typeCheckMode": "strict",
+  "reportMissingImports": true,
+  "reportOptionalMissingImports": true,
+  "reportOptionalMissingImportsFrom": []
 }

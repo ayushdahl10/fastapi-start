@@ -20,9 +20,3 @@ def load_permissions():
             perms= schemas.Permission(**{'url_path':str(route.path),'method':method,'name':name})
             create_permissions(db=db,permission=perms)
     print("permissions updated")
-
-
-
-def update_permissions():
-    db:Session=next(get_db())
-    
