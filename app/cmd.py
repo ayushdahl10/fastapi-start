@@ -1,5 +1,4 @@
 from commands import create_superuser, load_permissions, load_default_permissions
-from fastapi import Depends
 
 COMMANDS = {
     "create_superuser": create_superuser,

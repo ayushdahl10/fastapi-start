@@ -25,3 +25,4 @@ def load_permissions():
 
 def update_permissions():
     db:Session=next(get_db())
+    

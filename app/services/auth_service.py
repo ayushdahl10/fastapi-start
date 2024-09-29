@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from fastapi.openapi.models import ParameterInType
 from sqlalchemy.orm import Session
 import shortuuid
+from sqlalchemy.orm.mapper import schema
 from sqlalchemy.orm.strategy_options import joinedload
 from auth import models,schemas
 from services import role_perm as role_crud
@@ -19,7 +20,6 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
-
 
 def create_user_admin(db:Session,user:schemas.UserAdmin):
     user.password=hash_password(user.password)
@@ -69,3 +69,12 @@ def delete_user(db:Session,user_id:str):
         raise HTTPException(detail={"error":"user does not exists"},status_code=400)
     db.delete(db_user)
     db.commit()
+
+
+def update_user(db:Session,instance:models.User,user:schemas.UserUpdate):
+    update_user = user.model_dump(exclude_unset=True)
+    for key, value in update_user.items():
+        setattr(instance, key, value)
+    ins:schemas.User= instance
+    db.commit()
+    return user

@@ -53,7 +53,13 @@ class UserCreate(UserBase):
     first_name: str
     last_name: str
     age: int = Field(gt=18)
+    is_active:bool=True
 
+class UserUpdate(UserBase):
+    first_name:str
+    last_name:str
+    age:int=Field(gt=18)
+    is_active:bool
 
 class User(UserBase):
     first_name:str

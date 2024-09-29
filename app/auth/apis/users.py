@@ -14,17 +14,16 @@ api_key_header = APIKeyHeader(name='Authorization')
 
 router.dependencies=[Depends(api_key_header)]
 
-ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 @router.get("/users/me/", response_model=schemas.User,tags=['Auth'])
 @user_permission
-def read_users_me(request:Request,api_key=Depends(api_key_header)):
+def read_users_me(request:Request):
     user_me:schemas.User=request.state.user
     return user_me
 
 @router.post("/users",tags=['Auth'])
 @user_permission
-def create_user_admin(user:schemas.UserAdmin,db:Session=Depends(get_db),api_key=Depends(api_key_header)):
+def create_user_admin(request:Request,user:schemas.UserAdmin,db:Session=Depends(get_db)):
     check_email=crud.get_user_by_email(db=db,email=user.email)
     if check_email:
         raise HTTPException(detail={"error":f"user already exists for email= {user.email}"},status_code=400)
@@ -33,21 +32,31 @@ def create_user_admin(user:schemas.UserAdmin,db:Session=Depends(get_db),api_key=
 
 @router.get("/users/", response_model=list[schemas.User],tags=['Auth'])
 @user_permission
-def get_users(request:Request,skip: int = 0, limit: int = 100, db: Session = Depends(get_db),api_key=Depends(api_key_header)):
+def get_users(request:Request,skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db,skip=skip,limit=limit)
     return users
 
-@user_permission
 @router.get("/users/{user_id}",response_model=schemas.User,tags=['Auth'])
-def get_user_by_id(user_id:str,db:Session=Depends(get_db),api_key=Depends(api_key_header)):
+@user_permission
+def get_user_by_id(request:Request,user_id:str,db:Session=Depends(get_db)):
     users=crud.get_user(db,user_id)
     if users is None:
         return error_response(f"object not found with uid = {user_id}",status_code=404)
     return users
 
-
-@user_permission
 @router.delete("/users/{user_id}",tags=['Auth'])
-def delete_user(user_id:str,db:Session=Depends(get_db),api_key=Depends(api_key_header)):
+@user_permission
+def delete_user(request:Request,user_id:str,db:Session=Depends(get_db)):
     crud.delete_user(db=db,user_id=user_id)
     return success_response("User deleted successfully")
+
+@router.patch("/users/{user_id}",response_model=schemas.User,tags=['Auth'])
+@user_permission
+def update_user(request:Request,user_id:str,user:schemas.UserUpdate,db:Session=Depends(get_db)):
+    instance= crud.get_user(db,user_id)
+    if not instance:
+        raise HTTPException(detail={'error':f'user not found with id= {user_id}'})
+    user=crud.update_user(db=db,user=user,instance=instance)
+    updated_user= crud.get_user(db,user_id)
+    return  updated_user
+
