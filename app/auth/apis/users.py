@@ -2,6 +2,7 @@ from fastapi import Depends,HTTPException
 from fastapi import APIRouter,Request
 from sqlalchemy.orm import Session
 from fastapi.security.api_key import APIKeyHeader
+from starlette import status
 
 from helpers.base_res import success_response,error_response
 from auth import schemas
@@ -26,7 +27,7 @@ def read_users_me(request:Request):
 def create_user_admin(request:Request,user:schemas.UserAdmin,db:Session=Depends(get_db)):
     check_email=crud.get_user_by_email(db=db,email=user.email)
     if check_email:
-        raise HTTPException(detail={"error":f"user already exists for email= {user.email}"},status_code=400)
+        raise HTTPException(detail={"error":f"user already exists for email= {user.email}"},status_code=status.HTTP_400_BAD_REQUEST)
     instance= crud.create_user_admin(db=db,user=user)
     return success_response(content="user created successfully",status_code=200)
 
@@ -55,8 +56,7 @@ def delete_user(request:Request,user_id:str,db:Session=Depends(get_db)):
 def update_user(request:Request,user_id:str,user:schemas.UserUpdate,db:Session=Depends(get_db)):
     instance= crud.get_user(db,user_id)
     if not instance:
-        raise HTTPException(detail={'error':f'user not found with id= {user_id}'})
+        raise HTTPException(detail={'error':f'user not found with id= {user_id}'},status_code=status.HTTP_400_BAD_REQUEST,)
     user=crud.update_user(db=db,user=user,instance=instance)
     updated_user= crud.get_user(db,user_id)
     return  updated_user
-
