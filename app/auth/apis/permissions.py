@@ -1,6 +1,7 @@
 from fastapi import Depends,HTTPException,Request
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
+from starlette import status
 from typing_extensions import List
 
 from helpers.base_res import success_response
@@ -43,7 +44,7 @@ def get_all_roles(request:Request,db:Session=Depends(get_db)):
 def get_role_by_id(request:Request,role_id:str,db:Session=Depends(get_db)):
     role=crud.get_role_by_id(role_id=role_id,db=db)
     if not role:
-        raise HTTPException(detail={"error":f"role not found with id= {role_id}"})
+        raise HTTPException(detail={"error":f"role not found with id= {role_id}"},status_code=status.HTTP_404_NOT_FOUND)
     return role
 
 @router.patch("/roles/{role_id}",tags=['Role'],response_model=schemas.RoleDetail)

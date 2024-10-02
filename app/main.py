@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request
+from starlette.middleware import Middleware
 from starlette.types import Send,Receive,Scope
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
+import time
 
 from manager import engine
 from auth import models
@@ -16,6 +19,7 @@ origins = [
     "http://localhost:8000",
 ]
 
+#add middlewares
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -23,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
 
 app.include_router(login_register.router)
 app.include_router(users.router)

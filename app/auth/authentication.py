@@ -46,7 +46,7 @@ async def __get_current_user(request:Request):
     user = crud.get_user_by_email(db=db,email=token_data.username)
     if user is None:
         raise credentials_exception
-    request.state.user=user
+    request.state.user= user
     return user
 
 async def check_permissions(request:Request,user:models.User,name:str)->bool:
