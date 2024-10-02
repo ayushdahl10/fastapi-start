@@ -1,9 +1,11 @@
-from commands import create_superuser, load_permissions, load_default_permissions
+from commands import create_superuser, load_permissions, load_default_permissions, load_default_roles
 
 COMMANDS = {
     "create_superuser": create_superuser,
     "load_permissions":load_permissions,
-    'update_permissions':load_default_permissions
+    "update_permissions":load_default_permissions,
+    "load_default_roles":load_default_roles,
+
 }
 
 def function_call(function_name: str):

@@ -1,2 +1,3 @@
 from .create_superuser import create_superuser
-from .load_permissions import update_permissions,load_permissions,load_default_permissions
+from .load_permissions import load_permissions,load_default_permissions
+from .load_default_roles import load_default_roles

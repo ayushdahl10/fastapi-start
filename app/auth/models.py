@@ -3,6 +3,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
 from manager import Base
+from helpers.base_model import BaseModel
 
 
 class UserRole(Base):
@@ -12,17 +13,14 @@ class UserRole(Base):
     role=Column('role_id', ForeignKey('role.id'), primary_key=True)
 
 
-class User(Base):
+class User(BaseModel):
     __tablename__ = 'user'
 
-    id= Column(Integer, primary_key=True)
-    uid=Column(String,unique=True,index=True)
     username= Column(String,unique=True,nullable=True, default="")
     email= Column(String, unique=True, index=True)
     password=Column(String,default="")
     pasword_salt= Column(String)
     is_superuser=Column(Boolean,default=False)
-    is_active= Column(Boolean, default=True)
     is_verified=Column(Boolean, default=False)
     first_name= Column(String,default="")
     last_name= Column(String,default="")
@@ -34,11 +32,12 @@ class User(Base):
 class RolePermissions(Base):
     __tablename__= 'role_permission'
 
+
     role=Column('role_id',ForeignKey('role.id'),primary_key=True)
     permission=Column('permission_id',ForeignKey('permission.id'),primary_key=True)
 
 
-class Roles(Base):
+class Roles(BaseModel):
     __tablename__="role"
 
     id=Column(Integer, primary_key=True)
