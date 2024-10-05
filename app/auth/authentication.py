@@ -51,6 +51,8 @@ async def __get_current_user(request:Request):
 
 async def check_permissions(request:Request,user:models.User,name:str)->bool:
     db=next(get_db())
+    if user.is_superuser:
+        return True
     user_roles=user.role
     method=request.method
     has_permission:bool=False

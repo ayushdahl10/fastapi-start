@@ -6,6 +6,7 @@ COMMANDS = {
     'update_permissions':load_default_permissions
 }
 
+
 def function_call(function_name: str):
     if function_name in COMMANDS:
         print(f"Executing {function_name}")
@@ -16,6 +17,7 @@ def function_call(function_name: str):
 
 if __name__ == "__main__":
     try:
+        print(f"commands available are: {COMMANDS}")
         function_name = input("Enter a command name: ")
         result = function_call(function_name)
         if callable(result):

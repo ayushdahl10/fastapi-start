@@ -44,7 +44,6 @@ def create_user_admin(db:Session,user:schemas.UserAdmin):
     db.commit()
     db.refresh(db_user)
 
-
 def get_user_by_email(db:Session, email:str):
     user= db.query(models.User).filter(models.User.email==email).first()
     return user

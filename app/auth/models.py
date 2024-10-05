@@ -3,7 +3,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
 from manager import Base
-
+from helpers.base_model import BaseModel
 
 class UserRole(Base):
     __tablename__ = 'user_role'
@@ -12,7 +12,7 @@ class UserRole(Base):
     role=Column('role_id', ForeignKey('role.id'), primary_key=True)
 
 
-class User(Base):
+class User(BaseModel):
     __tablename__ = 'user'
 
     id= Column(Integer, primary_key=True)
@@ -38,7 +38,7 @@ class RolePermissions(Base):
     permission=Column('permission_id',ForeignKey('permission.id'),primary_key=True)
 
 
-class Roles(Base):
+class Roles(BaseModel):
     __tablename__="role"
 
     id=Column(Integer, primary_key=True)

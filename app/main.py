@@ -6,11 +6,12 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 import time
 
 from manager import engine
-from auth import models
+from helpers.base_model import Base
+from router import router
 #importing api routes
 from auth.apis import users,permissions,login_register
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 app=FastAPI(swagger_ui_parameters={"deepLinking": False})
 
 origins = [
@@ -29,6 +30,4 @@ app.add_middleware(
 )
 
 
-app.include_router(login_register.router)
-app.include_router(users.router)
-app.include_router(permissions.router)
+app.include_router(router=router)
