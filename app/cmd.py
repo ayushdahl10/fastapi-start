@@ -17,7 +17,10 @@ def function_call(function_name: str):
 
 if __name__ == "__main__":
     try:
-        print(f"commands available are: {COMMANDS}")
+        command_keys = list(COMMANDS.keys())
+        print(f"Available commands are:")
+        for command in command_keys:
+            print(f"- {command}")
         function_name = input("Enter a command name: ")
         result = function_call(function_name)
         if callable(result):

@@ -22,7 +22,7 @@ def user_permission(func):
     async def wrapper(*args, **kwargs):
         request=kwargs.get('request')
         user=await __get_current_user(request=request)
-        await check_permissions(request=request,user=user,name=func.__name__)
+        await __check_permissions(request=request,user=user,name=func.__name__)
         result = func(*args, **kwargs)
         return result
     return wrapper
@@ -49,7 +49,7 @@ async def __get_current_user(request:Request):
     request.state.user= user
     return user
 
-async def check_permissions(request:Request,user:models.User,name:str)->bool:
+async def __check_permissions(request:Request,user:models.User,name:str)->bool:
     db=next(get_db())
     if user.is_superuser:
         return True
