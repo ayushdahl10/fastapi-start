@@ -8,7 +8,7 @@
 # Run and watch application logs
 * docker logs -f app
 
-# Cope the sample .evn_sample and create a new file .env
+- Cope the sample .evn_sample and create a new file .env
 
 # Navigate inside app folder (cd/app)
 * python cmd
