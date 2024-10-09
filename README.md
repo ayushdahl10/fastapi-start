@@ -4,7 +4,7 @@
 
 # Enter inside application container
 * docker exec -it app bash
-* Cope the sample .evn_sample and create a new file .env
+* Cope the sample .env_sample and create a new file .env
 
 # Run  application
 * docker logs -f app
