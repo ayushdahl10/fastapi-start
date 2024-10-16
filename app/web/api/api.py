@@ -11,7 +11,7 @@ from helpers.base_res import success_response,error_response
 from manager.database import get_db
 from auth.authentication import user_permission
 from services import web_config as crud
-from helpers.base_service import model_detail
+from helpers.base_service import model_detail,save_model
 
 router=APIRouter()
 api_key_header = APIKeyHeader(name='Authorization')
@@ -21,7 +21,7 @@ router.dependencies=[Depends(api_key_header)]
 @router.post("/web_config",response_model=schemas.WebConfigBase,tags=["Config"])
 @user_permission
 def create_web_config(request:Request,web_config:schemas.WebConfigCreate,db:Session=Depends(get_db)):
-    web_config_obj=crud.create_web_config(db=db,web_config=web_config)
+    web_config_obj= save_model(db=db,validated_data=web_config,model=models.WebConfig)
     return web_config_obj
 
 @router.get("/web_config",tags=["Config"],response_model=List[schemas.WebConfigDetail])
