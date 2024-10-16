@@ -11,6 +11,14 @@ from auth import models
 #permission and role DTO
 class ProjectBase(BaseModel):
     uid:str
+    class Config:
+           from_attributes=True
+
+class ProjectFK(BaseModel):
+    uid:str
+    name:str
+    class Config:
+        from_attributes=True
 
 class ProjectCreate(BaseModel):
     name: str
@@ -33,14 +41,23 @@ class TaskBase(BaseModel):
     name:str
     is_active:bool
 
+    class Config:
+        from_attributes=True
+
 class TaskCreate(BaseModel):
     name:str
-    detail:str
+    details:str
     status:str
     is_active:bool
     project_id: str
 
+    class Config:
+           from_attributes=True
+
 class TaskDetail(TaskBase):
-    detail:str
+    details:str
     status:str
-    project:ProjectBase
+    project:ProjectFK
+
+    class Config:
+           from_attributes=True

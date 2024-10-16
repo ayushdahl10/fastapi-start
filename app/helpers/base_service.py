@@ -26,11 +26,10 @@ def delete_model(cls,db:Session,uid:str,force_delete=False):
         raise HTTPException(status_code=404, detail=f"no object found with uid= {uid}")
     if force_delete:
         db.delete(instance)
-        db.commit()
     else:
         instance.is_deleted=True
         instance.is_active=False
-        db.commit()
+    db.commit()
 
 def model_detail(cls,db:Session,uid:str):
     instance= db.query(cls).filter(cls.uid==uid,cls.is_deleted==False).first()
@@ -38,6 +37,6 @@ def model_detail(cls,db:Session,uid:str):
 
 
 def model_list(cls, db:Session):
-    return db.query(cls).filter(cls.is_deleted==False)
-
+    query=db.query(cls).filter(cls.is_deleted==False)
+    return query
 

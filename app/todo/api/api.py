@@ -2,7 +2,7 @@ from fastapi import Depends,HTTPException,Request
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from starlette import status
-from typing import List
+from typing_extensions import List
 
 from helpers.base_res import success_response
 from manager.database import get_db
@@ -33,14 +33,14 @@ def create_project(request:Request,project:ProjectCreate ,db:Session=Depends(get
 @router.get("/project", tags=['Project'],response_model=List[ProjectDetail])
 @user_permission
 def get_project(request:Request, db:Session=Depends(get_db)):
-    project_list= base_service.model_list(db=db,cls=Project)
+    project_list= base_service.model_list(db=db,cls=Project).filter(Project.owner==-request.state.user.id)
     return project_list
 
 @router.get("/project/{uid}",tags=['Project'], response_model=ProjectDetail)
 @user_permission
 def get_project_detail(request:Request,uid:str,db:Session= Depends(get_db)):
     project_detail= base_service.model_detail(cls=Project,uid=uid,db=db)
-    if not project_detail:
+    if not project_detail or project_detail.owner != request.state.user.id:
         raise HTTPException(detail=f"object not found with uid= {uid}",status_code=status.HTTP_404_NOT_FOUND)
     return project_detail
 
@@ -78,7 +78,7 @@ def get_task_detail(request:Request, uid:str, db:Session=Depends(get_db)):
         raise HTTPException(detail=f"object not found with uid= {uid}",status_code=status.HTTP_404_NOT_FOUND)
     return task_obj
 
-@router.patch("/task", tags=['Task'])
+@router.patch("/task", tags=['Task'],response_model=TaskDetail)
 @user_permission
 def update_task(request:Request, uid:str,task:TaskCreate, db:Session=Depends(get_db)):
     ...
@@ -86,6 +86,7 @@ def update_task(request:Request, uid:str,task:TaskCreate, db:Session=Depends(get
 @router.delete("/task/{uid}", tags=['Task'])
 @user_permission
 def delete_task(request:Request, uid:str, db:Session=Depends(get_db)):
-    return base_service.delete_model(cls=Task, uid=uid, force_delete=False, db=db)
+    base_service.delete_model(cls=Task, uid=uid, force_delete=False, db=db)
+    return success_response(content="data deleted successfully", status_code=status.HTTP_200_OK)
 
 #task api ends here
