@@ -6,7 +6,7 @@ from web.api import router as setting_api
 from todo.api import router as todo_router
 
 
-router= APIRouter()
+router = APIRouter()
 
 router.include_router(router=auth_router)
 router.include_router(router=setting_api)

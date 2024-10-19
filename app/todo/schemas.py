@@ -1,63 +1,59 @@
+from datetime import datetime
+from typing import Literal
+from typing_extensions import Optional
+from pydantic import BaseModel, Field
+from fastapi import Query
 
-from pydantic import BaseModel, EmailStr,Field
-from sqlalchemy.sql.base import Options
-from sqlalchemy.sql.operators import regexp_match_op
-from sqlalchemy.sql.sqltypes import BOOLEAN
-from typing import List,Optional
-from typing_extensions import Annotated
-from helpers.decorators import validate_password
-from auth import models
+from todo.constant import TaskStatus
 
-#permission and role DTO
-class ProjectBase(BaseModel):
-    uid:str
+
+# permission and role DTO
+class TaskTypeBase(BaseModel):
+    uid: str
+
     class Config:
-           from_attributes=True
+        from_attributes = True
 
-class ProjectFK(BaseModel):
-    uid:str
-    name:str
-    class Config:
-        from_attributes=True
 
-class ProjectCreate(BaseModel):
+class TaskTypeCreate(BaseModel):
+    name: str = Query(...)
+    is_active: bool = Query(default=False)
+    owner: Optional[int] = Field(None, exclude=True)
+
+
+# for list and detail of projects
+class TaskTypeDetail(TaskTypeBase):
     name: str
     status: str
     is_active: bool
-    owner:int
-    class Config:
-           from_attributes=True
 
-#for list and detail of projects
-class ProjectDetail(ProjectBase):
-    name:str
-    status: str
+
+# task DTO
+class TaskBase(BaseModel):
+    uid: str
+    name: str
     is_active: bool
 
-
-#task DTO
-class TaskBase(BaseModel):
-    uid:str
-    name:str
-    is_active:bool
-
     class Config:
-        from_attributes=True
+        from_attributes = True
 
-class TaskCreate(BaseModel):
-    name:str
-    details:str
-    status:str
-    is_active:bool
-    project_id: str
 
-    class Config:
-           from_attributes=True
+class TaskCreateForm(BaseModel):
+    name: str
+    details: str = ""
+    status: Literal[TaskStatus.pending, TaskStatus.completed]
+    is_active: bool = True
+    tasktype_id: str
+    start_datetime: str
+    end_datetime: str = ""
+    is_everyday: bool = False
+
 
 class TaskDetail(TaskBase):
-    details:str
-    status:str
-    project:ProjectFK
+    details: str
+    status: str
+    start_datetime: datetime
+    end_datetime: datetime
 
     class Config:
-           from_attributes=True
+        from_attributes = True

@@ -1,19 +1,28 @@
-from commands import create_superuser, load_permissions, load_default_permissions
+from commands import (
+    create_superuser,
+    load_permissions,
+    load_default_permissions,
+    load_tasktype,
+    load_default_roles,
+)
 
 COMMANDS = {
     "create_superuser": create_superuser,
-    "load_permissions":load_permissions,
-    'update_permissions':load_default_permissions
+    "load_permissions": load_permissions,
+    "update_permissions": load_default_permissions,
+    "load_tasktype": load_tasktype,
+    "load_roles": load_default_roles,
 }
 
 
 def function_call(function_name: str):
     if function_name in COMMANDS:
         print(f"Executing {function_name}")
-        func= COMMANDS[function_name]
+        func = COMMANDS[function_name]
         func()
     else:
         raise ValueError(f"Unknown command: {function_name}")
+
 
 if __name__ == "__main__":
     try:

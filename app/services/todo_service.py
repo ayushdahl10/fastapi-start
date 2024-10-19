@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from todo import models
 
-def get_todo(db:Session):
-    todo_list= db.query(models.Task).filter(models.Task.is_deleted==False)
+
+def get_todo(db: Session):
+    todo_list = db.query(models.Task).filter(models.Task.is_deleted == False)
     return todo_list

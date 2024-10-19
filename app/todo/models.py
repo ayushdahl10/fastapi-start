@@ -1,39 +1,32 @@
 from helpers.base_model import BaseModel
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, func
 from sqlalchemy.orm import relationship
 
 from todo.constant import ProjectStatus, TaskStatus
 
-class Project(BaseModel):
-    __tablename__='project'
 
-    name= Column(String(length=255), nullable=False, default="")
-    status= Column(String, nullable=False, default=ProjectStatus.pending)
-    owner= Column(Integer, ForeignKey('user.id'), nullable=False)
-    #relationship
-    project= relationship("Task", back_populates="project")
+# task_type
+class TaskType(BaseModel):
+    __tablename__ = "tasktype"
+
+    name = Column(String(length=255), nullable=False, default="", unique=True)
+    status = Column(String, nullable=False, default=ProjectStatus.in_progress)
+    owner = Column(Integer, ForeignKey("user.id"), nullable=True)
+    is_default = Column(Boolean, default=False, nullable=False)
+    # relationship
+    task = relationship("Task", back_populates="task_type")
 
 
 class Task(BaseModel):
-    __tablename__= "task"
+    __tablename__ = "task"
 
-    name= Column(String, nullable=False, default="")
-    details= Column(String, nullable=False, default="")
-    project_id = Column(Integer, ForeignKey('project.id'), nullable=False)
-    assign_to_id = Column(Integer, ForeignKey('user.id'), nullable=True)
-    status= Column(String, nullable=False,default=TaskStatus.pending)
-    #relationship
-    sub_tasks= relationship("SubTask", back_populates="task")
-    project = relationship("Project", back_populates="project")
+    name = Column(String, nullable=False, default="")
+    details = Column(String, nullable=False, default="")
+    tasktype_id = Column(Integer, ForeignKey("tasktype.id"), nullable=False)
+    status = Column(String, nullable=False, default=TaskStatus.pending)
+    start_datetime = Column(DateTime, nullable=False, server_default=func.now())
+    end_datetime = Column(DateTime, nullable=True)
+    is_everyday = Column(Boolean, default=False)
 
-
-class SubTask(BaseModel):
-    __tablename__= "subtask"
-
-    name= Column(String(length=255), nullable=False)
-    details= Column(String, nullable=False, default="")
-    task_id= Column(Integer, ForeignKey('task.id'), nullable=True)
-    status= Column(String, nullable=False, default=TaskStatus.pending)
-    #relationship
-    task= relationship("Task", back_populates="sub_tasks")
-
+    # relationship
+    task_type = relationship("TaskType", back_populates="task")

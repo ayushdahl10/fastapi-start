@@ -1,4 +1,6 @@
 .venv/
+.zed
+.vscode/
 __pycache__
 alembic/versions/
-*.db
+*.db*

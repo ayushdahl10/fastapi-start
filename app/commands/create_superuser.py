@@ -1,17 +1,15 @@
-from fastapi import Depends
-from pydantic_core.core_schema import ErrorType
 import shortuuid
 from sqlalchemy.orm.session import Session
 import getpass
 
 from manager.database import get_db
-from services import auth_service
-from auth import schemas, models
+from auth import models
 from helpers.auth_helper import hash_password
+
 
 def create_superuser():
     db: Session = next(get_db())
-    
+
     email = input("Email: ")
     password = getpass.getpass("Password: ")
     confirm_password = getpass.getpass("Confirm Password: ")
@@ -36,4 +34,3 @@ def create_superuser():
     db.add(db_user)
     db.commit()
     print("Superuser created successfully")
-
