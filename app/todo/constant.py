@@ -20,6 +20,7 @@ class TaskStatus(str, Enum):
 
 
 TASK_TYPES: List = [
+    "DEFAULT",
     "MEETING",
     "GYM",
     "SHOPPING",

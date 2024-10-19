@@ -27,10 +27,11 @@ router.dependencies = [Depends(api_key_header)]
 @user_permission
 def create_task_type(
     request: Request,
-    project: Annotated[TaskTypeCreate, Depends()],
+    project: TaskTypeCreate,
     db: Session = Depends(get_db),
 ):
     project.owner = request.state.user.id
+    project.name = project.name.upper()
     project = base_service.save_model(db=db, validated_data=project, cls=TaskType)
     return project
 
@@ -62,20 +63,30 @@ def create_task(
     task: Annotated[TaskCreateForm, Depends()],
     db: Session = Depends(get_db),
 ):
-    if not task.is_everyday and task.end_datetime == "":
+    if not task.is_everyday and task.end_date == "":
         raise HTTPException(
             detail="please select end date if you dont wanna set the task everyday",
             status_code=400,
         )
     if task.is_everyday:
-        task.end_datetime = None
-    task.start_datetime = datetime.datetime.strptime(
-        task.start_datetime, "%y-%m-%d %H:%M:%S"
+        task.end_date = None
+    # convert str to date and time
+
+    task.end_date = (
+        datetime.datetime.strptime(task.end_date, "%Y-%m-%d").date()
+        if task.end_date
+        else None
     )
-    if task.end_datetime is not None:
-        task.end_datetime = datetime.datetime.strptime(
-            task.end_datetime, "%y-%m%d %H:%M:%S"
+    task.start_date = datetime.datetime.strptime(task.start_date, "%Y-%m-%d").date()
+    task.start_time = datetime.datetime.strptime(task.start_time, "%H:%M:%S").time()
+    task.end_time = datetime.datetime.strptime(task.end_time, "%H:%M:%S").time()
+    # validating if start time and less than end time
+    if task.start_time > task.end_time:
+        raise HTTPException(
+            detail="start time cannot be greater than end time and vice versa",
+            status_code=status.HTTP_400_BAD_REQUEST,
         )
+    # validating project id
     project_id = base_service.model_detail(cls=TaskType, db=db, uid=task.tasktype_id)
     if not project_id:
         raise HTTPException(
@@ -83,6 +94,20 @@ def create_task(
             status_code=status.HTTP_404_NOT_FOUND,
         )
     task.tasktype_id = project_id.id
+    check_if_task_exists = (
+        base_service.model_list(cls=Task, db=db)
+        .filter(
+            (Task.start_date == task.start_date)
+            & (Task.start_time <= task.start_time)
+            & (Task.end_time > task.start_time)
+        )
+        .count()
+    )
+    if check_if_task_exists > 0:
+        raise HTTPException(
+            detail="another task already exists in that time period",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
     task_obj = base_service.save_model(cls=Task, db=db, validated_data=task)
     return task_obj
 
